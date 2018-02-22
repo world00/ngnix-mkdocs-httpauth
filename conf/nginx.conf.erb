@@ -1,0 +1,40 @@
+daemon off;
+worker_processes 4;
+
+events {
+  use epoll;
+  worker_connections 1024;
+}
+
+http {
+  sendfile on;
+  tcp_nopush on;
+  tcp_nodelay on;
+
+  gzip_static on;
+
+  include mime.types;
+
+ <% if ENV["MKDOCS_SITEURL"] %>
+  server {
+    listen <%= ENV["PORT"] %>;
+    rewrite ^(.*) <%= ENV["MKDOCS_SITEURL"] %>$1 permanent;
+  }
+ <% end %>
+
+  server {
+    listen <%= ENV["PORT"] %>;
+    port_in_redirect off;
+    root /app/public;
+  <% if ENV["MKDOCS_SITEURL"] %>
+    server_name <%= require 'uri'; URI.parse(ENV["MKDOCS_SITEURL"]).host %>;
+  <% end %>
+    auth_basic           "Administrator’s Area";
+    auth_basic_user_file /app/.htpasswd;
+
+    location / {
+      expires 10s;
+    }
+  }
+}
+
