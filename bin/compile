@@ -41,18 +41,16 @@ export LD_LIBRARY_PATH=$CACHE_DIR/$PYTHON_VERSION/lib
 
 puts-step "Ensure pip"
 python -m ensurepip --upgrade | indent
+python -m pip install --upgrade setuptools | indent
+python -m pip install --upgrade pip | indent
 
 cd $BUILD_DIR
 
 if [[ -f requirements.txt ]]; then
   puts-step "Installing dependencies using pip"
-  python -m pip install --upgrade setuptools | indent
-  python -m pip install --upgrade pip | indent
   python -m pip install --quiet -r requirements.txt | indent
 else
   puts-step "Installing MkDocs"
-  python -m pip install --upgrade setuptools | indent
-  python -m pip install --upgrade pip | indent
   python -m pip install --quiet mkdocs | indent
 fi
 
